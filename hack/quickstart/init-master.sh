@@ -53,7 +53,7 @@ function configure_network() {
         /usr/bin/etcdctl cluster-health && break
         sleep 1
     done
-    /usr/bin/etcdctl set /coreos.com/network/config '{ "Network": "10.2.0.0/16", "Backend":{"Type":"vxlan"}}'
+    /usr/bin/etcdctl set /coreos.com/network/config '{ "Network": "10.2.0.0/16", "Backend":{"Type":"gce"}}'
 }
 
 # Initialize a Master node
