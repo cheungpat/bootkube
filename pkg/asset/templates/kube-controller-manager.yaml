@@ -22,6 +22,7 @@ spec:
         - --root-ca-file=/etc/kubernetes/secrets/ca.crt
         - --service-account-private-key-file=/etc/kubernetes/secrets/service-account.key
         - --leader-elect=true
+        - --cloud-provider=gce
         volumeMounts:
         - name: secrets
           mountPath: /etc/kubernetes/secrets
