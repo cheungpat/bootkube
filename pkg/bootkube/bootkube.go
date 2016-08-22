@@ -37,8 +37,9 @@ var requiredPods = []string{
 }
 
 type Config struct {
-	AssetDir   string
-	EtcdServer *url.URL
+	AssetDir       string
+	EtcdServer     *url.URL
+	ClusterIPRange string
 }
 
 type bootkube struct {
@@ -61,7 +62,7 @@ func NewBootkube(config Config) (*bootkube, error) {
 		"--tls-cert-file=" + filepath.Join(config.AssetDir, asset.AssetPathAPIServerCert),
 		"--client-ca-file=" + filepath.Join(config.AssetDir, asset.AssetPathCACert),
 		"--etcd-servers=" + config.EtcdServer.String(),
-		"--service-cluster-ip-range=10.3.0.0/24",
+		"--service-cluster-ip-range=" + config.ClusterIPRange,
 		"--service-account-key-file=" + filepath.Join(config.AssetDir, asset.AssetPathServiceAccountPubKey),
 		"--admission-control=ServiceAccount",
 		"--runtime-config=extensions/v1beta1/deployments=true,extensions/v1beta1/daemonsets=true",

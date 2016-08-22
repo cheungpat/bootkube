@@ -45,6 +45,7 @@ type Config struct {
 	CAPrivKey          *rsa.PrivateKey
 	AltNames           *tlsutil.AltNames
 	ServerCertValidity time.Duration
+	ClusterIPRange     string
 }
 
 // NewDefaultAssets returns a list of default assets, optionally

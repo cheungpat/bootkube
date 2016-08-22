@@ -39,6 +39,7 @@ var (
 		apiServers                string
 		altNames                  string
 		serverCertificateValidity int
+		clusterIPRange            string
 	}
 )
 
@@ -51,6 +52,7 @@ func init() {
 	cmdRender.Flags().StringVar(&renderOpts.apiServers, "api-servers", "https://127.0.0.1:443", "List of API server URLs including host:port, commma seprated")
 	cmdRender.Flags().StringVar(&renderOpts.altNames, "api-server-alt-names", "", "List of SANs to use in api-server certificate. Example: 'IP=127.0.0.1,IP=127.0.0.2,DNS=localhost'. If empty, SANs will be extracted from the --api-servers flag.")
 	cmdRender.Flags().IntVar(&renderOpts.serverCertificateValidity, "server-certificate-validity", 1, "How many years are the server certificate valid for (in years)")
+	cmdRender.Flags().StringVar(&renderOpts.clusterIPRange, "cluster-ip-range", "10.3.0.0/24", "The CIDR of Service Cluster IP Range")
 }
 
 func runCmdRender(cmd *cobra.Command, args []string) error {
@@ -119,6 +121,7 @@ func flagsToAssetConfig() (c *asset.Config, err error) {
 		APIServers:         apiServers,
 		AltNames:           altNames,
 		ServerCertValidity: Duration365d * time.Duration(renderOpts.serverCertificateValidity),
+		ClusterIPRange:     renderOpts.clusterIPRange,
 	}, nil
 }
 
