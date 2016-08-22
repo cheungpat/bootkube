@@ -4,7 +4,6 @@ set -euo pipefail
 REMOTE_HOST=$1
 KUBECONFIG=$2
 REMOTE_PORT=${REMOTE_PORT:-22}
-IDENT=${IDENT:-${HOME}/.ssh/id_rsa}
 
 function usage() {
     echo "USAGE:"
@@ -66,15 +65,15 @@ function init_worker_node() {
 if [ "${REMOTE_HOST}" != "local" ]; then
 
     # Copy kubelet service file and kubeconfig to remote host
-    scp -i ${IDENT} -P ${REMOTE_PORT} kubelet.worker core@${REMOTE_HOST}:/home/core/kubelet.worker
-    scp -i ${IDENT} -P ${REMOTE_PORT} ${KUBECONFIG} core@${REMOTE_HOST}:/home/core/kubeconfig
+    scp -P ${REMOTE_PORT} kubelet.worker core@${REMOTE_HOST}:/home/core/kubelet.worker
+    scp -P ${REMOTE_PORT} ${KUBECONFIG} core@${REMOTE_HOST}:/home/core/kubeconfig
 
     # Copy self to remote host so script can be executed in "local" mode
-    scp -i ${IDENT} -P ${REMOTE_PORT} ${BASH_SOURCE[0]} core@${REMOTE_HOST}:/home/core/init-worker.sh
-    ssh -i ${IDENT} -p ${REMOTE_PORT} core@${REMOTE_HOST} "sudo /home/core/init-worker.sh local /home/core/kubeconfig"
+    scp -P ${REMOTE_PORT} ${BASH_SOURCE[0]} core@${REMOTE_HOST}:/home/core/init-worker.sh
+    ssh -p ${REMOTE_PORT} core@${REMOTE_HOST} "sudo /home/core/init-worker.sh local /home/core/kubeconfig"
 
     # Cleanup
-    ssh -i ${IDENT} -p ${REMOTE_PORT} core@${REMOTE_HOST} "rm /home/core/init-worker.sh"
+    ssh -p ${REMOTE_PORT} core@${REMOTE_HOST} "rm /home/core/init-worker.sh"
 
     echo
     echo "Node bootstrap complete. It may take a few minutes for the node to become ready. Access your kubernetes cluster using:"
