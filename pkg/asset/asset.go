@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/coreos/bootkube/pkg/tlsutil"
 )
@@ -38,11 +39,12 @@ const (
 // AssetConfig holds all configuration needed when generating
 // the default set of assets.
 type Config struct {
-	EtcdServers []*url.URL
-	APIServers  []*url.URL
-	CACert      *x509.Certificate
-	CAPrivKey   *rsa.PrivateKey
-	AltNames    *tlsutil.AltNames
+	EtcdServers        []*url.URL
+	APIServers         []*url.URL
+	CACert             *x509.Certificate
+	CAPrivKey          *rsa.PrivateKey
+	AltNames           *tlsutil.AltNames
+	ServerCertValidity time.Duration
 }
 
 // NewDefaultAssets returns a list of default assets, optionally
@@ -53,7 +55,7 @@ func NewDefaultAssets(conf Config) (Assets, error) {
 	as = append(as, newDynamicAssets(conf)...)
 
 	// TLS assets
-	tlsAssets, err := newTLSAssets(conf.CACert, conf.CAPrivKey, *conf.AltNames)
+	tlsAssets, err := newTLSAssets(conf.CACert, conf.CAPrivKey, *conf.AltNames, conf.ServerCertValidity)
 	if err != nil {
 		return Assets{}, err
 	}

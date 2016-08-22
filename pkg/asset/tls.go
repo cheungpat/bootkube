@@ -4,11 +4,12 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"net"
+	"time"
 
 	"github.com/coreos/bootkube/pkg/tlsutil"
 )
 
-func newTLSAssets(caCert *x509.Certificate, caPrivKey *rsa.PrivateKey, altNames tlsutil.AltNames) ([]Asset, error) {
+func newTLSAssets(caCert *x509.Certificate, caPrivKey *rsa.PrivateKey, altNames tlsutil.AltNames, validity time.Duration) ([]Asset, error) {
 	var (
 		assets []Asset
 		err    error
@@ -21,7 +22,7 @@ func newTLSAssets(caCert *x509.Certificate, caPrivKey *rsa.PrivateKey, altNames 
 		}
 	}
 
-	apiKey, apiCert, err := newAPIKeyAndCert(caCert, caPrivKey, altNames)
+	apiKey, apiCert, err := newAPIKeyAndCert(caCert, caPrivKey, altNames, validity)
 	if err != nil {
 		return assets, err
 	}
@@ -36,7 +37,7 @@ func newTLSAssets(caCert *x509.Certificate, caPrivKey *rsa.PrivateKey, altNames 
 		return assets, err
 	}
 
-	kubeletKey, kubeletCert, err := newKubeletKeyAndCert(caCert, caPrivKey)
+	kubeletKey, kubeletCert, err := newKubeletKeyAndCert(caCert, caPrivKey, validity)
 	if err != nil {
 		return assets, err
 	}
@@ -73,7 +74,7 @@ func newCACert() (*rsa.PrivateKey, *x509.Certificate, error) {
 	return key, cert, err
 }
 
-func newAPIKeyAndCert(caCert *x509.Certificate, caPrivKey *rsa.PrivateKey, altNames tlsutil.AltNames) (*rsa.PrivateKey, *x509.Certificate, error) {
+func newAPIKeyAndCert(caCert *x509.Certificate, caPrivKey *rsa.PrivateKey, altNames tlsutil.AltNames, validity time.Duration) (*rsa.PrivateKey, *x509.Certificate, error) {
 	key, err := tlsutil.NewPrivateKey()
 	if err != nil {
 		return nil, nil, err
@@ -91,14 +92,14 @@ func newAPIKeyAndCert(caCert *x509.Certificate, caPrivKey *rsa.PrivateKey, altNa
 		Organization: []string{"kube-master"},
 		AltNames:     altNames,
 	}
-	cert, err := tlsutil.NewSignedCertificate(config, key, caCert, caPrivKey)
+	cert, err := tlsutil.NewSignedCertificate(config, key, caCert, caPrivKey, validity)
 	if err != nil {
 		return nil, nil, err
 	}
 	return key, cert, err
 }
 
-func newKubeletKeyAndCert(caCert *x509.Certificate, caPrivKey *rsa.PrivateKey) (*rsa.PrivateKey, *x509.Certificate, error) {
+func newKubeletKeyAndCert(caCert *x509.Certificate, caPrivKey *rsa.PrivateKey, validity time.Duration) (*rsa.PrivateKey, *x509.Certificate, error) {
 	key, err := tlsutil.NewPrivateKey()
 	if err != nil {
 		return nil, nil, err
@@ -107,7 +108,7 @@ func newKubeletKeyAndCert(caCert *x509.Certificate, caPrivKey *rsa.PrivateKey) (
 		CommonName:   "kubelet",
 		Organization: []string{"kube-node"},
 	}
-	cert, err := tlsutil.NewSignedCertificate(config, key, caCert, caPrivKey)
+	cert, err := tlsutil.NewSignedCertificate(config, key, caCert, caPrivKey, validity)
 	if err != nil {
 		return nil, nil, err
 	}

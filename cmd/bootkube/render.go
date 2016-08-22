@@ -9,11 +9,16 @@ import (
 	"net"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 
 	"github.com/coreos/bootkube/pkg/asset"
 	"github.com/coreos/bootkube/pkg/tlsutil"
+)
+
+const (
+	Duration365d = time.Hour * 24 * 365
 )
 
 var (
@@ -27,12 +32,13 @@ var (
 	}
 
 	renderOpts struct {
-		assetDir          string
-		caCertificatePath string
-		caPrivateKeyPath  string
-		etcdServers       string
-		apiServers        string
-		altNames          string
+		assetDir                  string
+		caCertificatePath         string
+		caPrivateKeyPath          string
+		etcdServers               string
+		apiServers                string
+		altNames                  string
+		serverCertificateValidity int
 	}
 )
 
@@ -44,6 +50,7 @@ func init() {
 	cmdRender.Flags().StringVar(&renderOpts.etcdServers, "etcd-servers", "http://127.0.0.1:2379", "List of etcd servers URLs including host:port, comma separated")
 	cmdRender.Flags().StringVar(&renderOpts.apiServers, "api-servers", "https://127.0.0.1:443", "List of API server URLs including host:port, commma seprated")
 	cmdRender.Flags().StringVar(&renderOpts.altNames, "api-server-alt-names", "", "List of SANs to use in api-server certificate. Example: 'IP=127.0.0.1,IP=127.0.0.2,DNS=localhost'. If empty, SANs will be extracted from the --api-servers flag.")
+	cmdRender.Flags().IntVar(&renderOpts.serverCertificateValidity, "server-certificate-validity", 1, "How many years are the server certificate valid for (in years)")
 }
 
 func runCmdRender(cmd *cobra.Command, args []string) error {
@@ -106,11 +113,12 @@ func flagsToAssetConfig() (c *asset.Config, err error) {
 		}
 	}
 	return &asset.Config{
-		EtcdServers: etcdServers,
-		CACert:      caCert,
-		CAPrivKey:   caPrivKey,
-		APIServers:  apiServers,
-		AltNames:    altNames,
+		EtcdServers:        etcdServers,
+		CACert:             caCert,
+		CAPrivKey:          caPrivKey,
+		APIServers:         apiServers,
+		AltNames:           altNames,
+		ServerCertValidity: Duration365d * time.Duration(renderOpts.serverCertificateValidity),
 	}, nil
 }
 

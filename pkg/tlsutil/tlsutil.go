@@ -102,7 +102,7 @@ func ParsePEMEncodedPrivateKey(pemdata []byte) (*rsa.PrivateKey, error) {
 	return x509.ParsePKCS1PrivateKey(decoded.Bytes)
 }
 
-func NewSignedCertificate(cfg CertConfig, key *rsa.PrivateKey, caCert *x509.Certificate, caKey *rsa.PrivateKey) (*x509.Certificate, error) {
+func NewSignedCertificate(cfg CertConfig, key *rsa.PrivateKey, caCert *x509.Certificate, caKey *rsa.PrivateKey, validity time.Duration) (*x509.Certificate, error) {
 	serial, err := rand.Int(rand.Reader, new(big.Int).SetInt64(math.MaxInt64))
 	if err != nil {
 		return nil, err
@@ -117,7 +117,7 @@ func NewSignedCertificate(cfg CertConfig, key *rsa.PrivateKey, caCert *x509.Cert
 		IPAddresses:  cfg.AltNames.IPs,
 		SerialNumber: serial,
 		NotBefore:    caCert.NotBefore,
-		NotAfter:     time.Now().Add(Duration365d).UTC(),
+		NotAfter:     time.Now().Add(validity).UTC(),
 		KeyUsage:     x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
 		ExtKeyUsage:  []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth, x509.ExtKeyUsageClientAuth},
 	}
