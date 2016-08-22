@@ -75,7 +75,9 @@ function init_master_node() {
         --volume home,kind=host,source=/home/core \
         --mount volume=home,target=/core \
         --trust-keys-from-https --net=host ${BOOTKUBE_REPO}:${BOOTKUBE_VERSION} --exec \
-        /bootkube -- render --asset-dir=/core/assets --api-servers=https://${COREOS_PUBLIC_IPV4}:443,https://${COREOS_PRIVATE_IPV4}:443
+        /bootkube -- render --asset-dir=/core/assets --api-servers=https://${COREOS_PUBLIC_IPV4}:443,https://${COREOS_PRIVATE_IPV4}:443 \
+            --api-server-alt-names=IP=${COREOS_PUBLIC_IPV4},IP=${COREOS_PRIVATE_IPV4} \
+            --server-certificate-validity 10
 
     # Move the local kubeconfig into expected location
     chown -R core:core /home/core/assets
@@ -90,7 +92,8 @@ function init_master_node() {
         --volume home,kind=host,source=/home/core \
         --mount volume=home,target=/core \
         --net=host ${BOOTKUBE_REPO}:${BOOTKUBE_VERSION} --exec \
-        /bootkube -- start --asset-dir=/core/assets
+        /bootkube -- start --asset-dir=/core/assets \
+            --cluster-ip-range=10.3.0.0/20
 }
 
 [ "$#" == 1 ] || usage
