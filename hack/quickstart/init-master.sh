@@ -5,8 +5,8 @@ REMOTE_HOST=$1
 REMOTE_PORT=${REMOTE_PORT:-22}
 CLUSTER_DIR=${CLUSTER_DIR:-cluster}
 
-BOOTKUBE_REPO=quay.io/coreos/bootkube
-BOOTKUBE_VERSION=v0.1.4
+BOOTKUBE_REPO=quay.io/cheungpat/bootkube
+BOOTKUBE_VERSION=latest
 
 function usage() {
     echo "USAGE:"
