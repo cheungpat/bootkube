@@ -10,7 +10,8 @@ Launch nodes:
 $ gcloud compute instances create k8s-core1 \
   --image https://www.googleapis.com/compute/v1/projects/coreos-cloud/global/images/coreos-stable-1068-9-0-v20160809 \
   --zone us-central1-a --machine-type n1-standard-1 \
-  --can-ip-forward --scopes compute-rw
+   --tags "apiserver" \
+  --can-ip-forward  --scopes default="https://www.googleapis.com/auth/cloud-platform"
 ```
 
 Tag the first node as an apiserver node, and allow traffic to 443 on that node.
