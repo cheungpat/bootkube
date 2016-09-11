@@ -7,12 +7,13 @@ To find the latest CoreOS alpha/beta/stable images, please see the [CoreOS GCE D
 Launch nodes:
 
 ```
-$ gcloud compute instances create k8s-core1 \
+$ gcloud compute instances create k8s-minion-1 \
   --image https://www.googleapis.com/compute/v1/projects/coreos-cloud/global/images/coreos-stable-1068-9-0-v20160809 \
   --zone us-central1-a --machine-type n1-standard-1 \
   --can-ip-forward \
-  --boot-disk-size "100"
-  --scopes compute-rw,cloud.useraccounts.readonly,devstorage.read_only,logging.write,monitoring.write,service.management.readonly,servicecontrol
+  --boot-disk-size "100" \
+  --scopes compute-rw,devstorage.read_only,logging.write,monitoring.write \
+  --metadata "user-data=#cloud-config\u000a\u000ahostname: \"k8s-minion-1\""
 ```
 
 Tag the first node as an apiserver node, and allow traffic to 443 on that node.
