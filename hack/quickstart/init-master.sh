@@ -6,7 +6,7 @@ REMOTE_PORT=${REMOTE_PORT:-22}
 CLUSTER_DIR=${CLUSTER_DIR:-cluster}
 
 BOOTKUBE_REPO=quay.io/cheungpat/bootkube-gce
-BOOTKUBE_VERSION=v0.1.4-1
+BOOTKUBE_VERSION=v0.1.4-2
 
 function usage() {
     echo "USAGE:"
